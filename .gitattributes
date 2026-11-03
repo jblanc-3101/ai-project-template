@@ -1,0 +1,21 @@
+# Fins de ligne : LF partout dans le dépôt et dans le dossier de travail
+* text=auto eol=lf
+
+# Scripts batch Windows : CRLF obligatoire pour cmd.exe
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Fichiers binaires : jamais de conversion, jamais de diff texte
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.parquet binary
+*.pkl binary
+*.joblib binary
+*.onnx binary
+*.h5 binary
