@@ -1,0 +1,26 @@
+# Contrôles lancés automatiquement à chaque commit (voir https://pre-commit.com)
+repos:
+  # Hooks génériques fournis par l'équipe pre-commit
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  # Ruff : lint avec correction automatique, puis formatage
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # Gitleaks : bloque les secrets (clés d'API, mots de passe, jetons)
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
