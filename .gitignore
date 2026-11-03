@@ -1,0 +1,40 @@
+# Environnements virtuels
+.venv/
+venv/
+
+# Bytecode et caches Python
+__pycache__/
+*.py[cod]
+
+# Caches des outils de qualité et de tests
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Artefacts de build
+build/
+dist/
+*.egg-info/
+
+# Secrets : variables d'environnement locales
+.env
+.env.*
+!.env.example
+
+# Données (jamais versionnées)
+/data/
+
+# Sorties MLflow
+/mlruns/
+/mlartifacts/
+
+# Terraform : état et fournisseurs téléchargés
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Points de contrôle des notebooks Jupyter
+.ipynb_checkpoints/
