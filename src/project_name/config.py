@@ -1,9 +1,12 @@
 """Application settings, read from environment variables and an optional .env file."""
 
+from functools import lru_cache
 from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+AppEnv = Literal["dev", "test", "prod"]
 
 
 class Settings(BaseSettings):
@@ -16,6 +19,12 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_env: Literal["dev", "test", "prod"] = "dev"
+    app_env: AppEnv = "dev"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     api_key: SecretStr | None = None
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Return the application settings, created once and then reused."""
+    return Settings()

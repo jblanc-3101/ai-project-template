@@ -52,8 +52,10 @@ Sous PowerShell, pour la copie, remplacer la dernière ligne par `Copy-Item .env
 ├── src/
 │   └── project_name/         # code Python du projet
 │       ├── __init__.py       # marque le dossier comme un paquet Python
+│       ├── api.py            # API FastAPI : application et route /health
 │       └── config.py         # configuration typée, lue dans l'environnement
 ├── tests/
+│   ├── test_api.py           # tests de l'API
 │   ├── test_config.py        # tests de la configuration
 │   └── test_smoke.py         # vérifie que le paquet s'importe
 ├── .env.example              # modèle de configuration, sans secret
@@ -83,8 +85,8 @@ Remplacer ces éléments par le nom du nouveau projet :
 
 | Élément | Où le changer |
 |---|---|
-| `project-name` | `pyproject.toml`, `tests/test_smoke.py` |
-| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `tests/test_smoke.py`, `tests/test_config.py`, structure du dépôt dans `README.md` |
+| `project-name` | `pyproject.toml`, `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_api.py` |
+| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_api.py`, structure du dépôt dans `README.md`, commande `uvicorn` dans `CLAUDE.md` |
 | `ai-project-template` | titre de `README.md`, `CLAUDE.md` |
 | Description du projet | `pyproject.toml`, introduction de `README.md`, `CLAUDE.md` |
 | Ligne de copyright | `LICENSE` |
@@ -102,7 +104,6 @@ Les seules occurrences restantes doivent être celles de cette section, qui cite
 ## Prochaines étapes
 
 - Intégration continue (CI).
-- API.
 - Docker.
 - Terraform.
 - Documentation.

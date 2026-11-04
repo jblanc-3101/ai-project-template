@@ -53,6 +53,7 @@ L'auteur est en formation : chaque fichier doit pouvoir être expliqué devant u
 
 - `uv sync` : installe les dépendances de `uv.lock` dans `.venv`.
 - `uv run pre-commit install` : active les contrôles à chaque commit.
+- `uv run uvicorn project_name.api:app --reload` : lance l'API en local.
 - `uv run pytest` : lance les tests et mesure la couverture.
 - `uv run ruff check .` : signale les erreurs de lint.
 - `uv run ruff check . --fix` : corrige automatiquement les erreurs qui peuvent l'être.

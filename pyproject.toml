@@ -5,7 +5,9 @@ description = "Template for Python data and AI projects: ETL, machine learning m
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.162.0",
     "pydantic-settings>=2.16.2",
+    "uvicorn>=0.54.0",
 ]
 
 [build-system]
@@ -14,6 +16,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "httpx2>=2.16.0",
     "pre-commit>=4.7.0",
     "pytest>=9.2.0",
     "pytest-cov>=7.1.0",
