@@ -51,4 +51,14 @@ L'auteur est en formation : chaque fichier doit pouvoir être expliqué devant u
 
 ## Commandes
 
-<!-- À compléter à la fin de la séance. -->
+- `uv sync` : installe les dépendances de `uv.lock` dans `.venv`.
+- `uv run pre-commit install` : active les contrôles à chaque commit.
+- `uv run pytest` : lance les tests et mesure la couverture.
+- `uv run ruff check .` : signale les erreurs de lint.
+- `uv run ruff check . --fix` : corrige automatiquement les erreurs qui peuvent l'être.
+- `uv run ruff format .` : formate le code.
+- `uv run pre-commit run --all-files` : lance tous les contrôles sur tout le dépôt.
+- `uv add <paquet>` : ajoute une dépendance d'exécution.
+- `uv add --dev <paquet>` : ajoute une dépendance de développement.
+- `cp .env.example .env` : crée le fichier local de configuration (équivalent PowerShell dans
+  le README).
