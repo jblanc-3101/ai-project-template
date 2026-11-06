@@ -16,7 +16,6 @@ Template de dépôt GitHub pour des projets de data et d'IA en Python. Il sert d
 | Docker | `winget install --id Docker.DockerDesktop -e` | `brew install --cask docker-desktop` | [Documentation de Docker Engine](https://docs.docker.com/engine/install/) |
 
 - Python n'est pas à installer à part : uv installe la version 3.12, fixée par `.python-version`.
-- Docker n'est pas encore utilisé dans le projet.
 
 ## Commandes selon le système
 
@@ -61,12 +60,14 @@ Sous PowerShell, pour la copie, remplacer la dernière ligne par `Copy-Item .env
 │   ├── test_config.py        # tests de la configuration
 │   ├── test_logging_config.py # tests de la configuration des logs
 │   └── test_smoke.py         # vérifie que le paquet s'importe
+├── .dockerignore             # fichiers exclus de la construction de l'image Docker
 ├── .env.example              # modèle de configuration, sans secret
 ├── .gitattributes            # fins de ligne et fichiers binaires
 ├── .gitignore                # fichiers exclus de Git
 ├── .pre-commit-config.yaml   # contrôles lancés à chaque commit
 ├── .python-version           # version de Python du projet
 ├── CLAUDE.md                 # règles de travail et commandes du projet
+├── Dockerfile                # image Docker de l'API, construite en deux étapes
 ├── LICENSE                   # licence MIT
 ├── README.md                 # ce fichier
 ├── pyproject.toml            # métadonnées, dépendances, réglages des outils
@@ -89,7 +90,7 @@ Remplacer ces éléments par le nom du nouveau projet :
 | Élément | Où le changer |
 |---|---|
 | `project-name` | `pyproject.toml`, `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_api.py` |
-| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `src/project_name/logging_config.py`, `tests/conftest.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_logging_config.py`, `tests/test_api.py`, structure du dépôt dans `README.md`, commande `uvicorn` dans `CLAUDE.md` |
+| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `src/project_name/logging_config.py`, `tests/conftest.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_logging_config.py`, `tests/test_api.py`, structure du dépôt dans `README.md`, commande `uvicorn` dans `CLAUDE.md` et `Dockerfile` |
 | `ai-project-template` | titre de `README.md`, `CLAUDE.md` |
 | Description du projet | `pyproject.toml`, introduction de `README.md`, `CLAUDE.md` |
 | Ligne de copyright | `LICENSE` |
@@ -107,7 +108,6 @@ Les seules occurrences restantes doivent être celles de cette section, qui cite
 ## Prochaines étapes
 
 - Intégration continue (CI).
-- Docker.
 - Terraform.
 - Documentation.
 

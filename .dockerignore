@@ -1,0 +1,21 @@
+# Environnements et dépôt
+.venv
+.git
+
+# Caches (les motifs partent de la racine : ** cherche dans tous les dossiers)
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Données et sorties
+data
+mlruns
