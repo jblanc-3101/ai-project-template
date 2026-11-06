@@ -67,6 +67,7 @@ Sous PowerShell, pour la copie, remplacer la dernière ligne par `Copy-Item .env
 ├── .pre-commit-config.yaml   # contrôles lancés à chaque commit
 ├── .python-version           # version de Python du projet
 ├── CLAUDE.md                 # règles de travail et commandes du projet
+├── compose.yaml              # services locaux : API et serveur MLflow
 ├── Dockerfile                # image Docker de l'API, construite en deux étapes
 ├── LICENSE                   # licence MIT
 ├── README.md                 # ce fichier
