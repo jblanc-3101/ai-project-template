@@ -7,6 +7,7 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 AppEnv = Literal["dev", "test", "prod"]
+LogFormat = Literal["json", "console"]
 
 
 class Settings(BaseSettings):
@@ -21,6 +22,7 @@ class Settings(BaseSettings):
 
     app_env: AppEnv = "dev"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    log_format: LogFormat = "json"
     api_key: SecretStr | None = None
 
 

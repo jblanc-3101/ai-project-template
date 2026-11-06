@@ -52,11 +52,14 @@ Sous PowerShell, pour la copie, remplacer la dernière ligne par `Copy-Item .env
 ├── src/
 │   └── project_name/         # code Python du projet
 │       ├── __init__.py       # marque le dossier comme un paquet Python
-│       ├── api.py            # API FastAPI : application et route /health
-│       └── config.py         # configuration typée, lue dans l'environnement
+│       ├── api.py            # API FastAPI : application, middleware de log, route /health
+│       ├── config.py         # configuration typée, lue dans l'environnement
+│       └── logging_config.py # logs structurés : JSON ou console, sur la sortie standard
 ├── tests/
+│   ├── conftest.py           # fixtures partagées par les tests
 │   ├── test_api.py           # tests de l'API
 │   ├── test_config.py        # tests de la configuration
+│   ├── test_logging_config.py # tests de la configuration des logs
 │   └── test_smoke.py         # vérifie que le paquet s'importe
 ├── .env.example              # modèle de configuration, sans secret
 ├── .gitattributes            # fins de ligne et fichiers binaires
@@ -86,7 +89,7 @@ Remplacer ces éléments par le nom du nouveau projet :
 | Élément | Où le changer |
 |---|---|
 | `project-name` | `pyproject.toml`, `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_api.py` |
-| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_api.py`, structure du dépôt dans `README.md`, commande `uvicorn` dans `CLAUDE.md` |
+| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `src/project_name/logging_config.py`, `tests/conftest.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_logging_config.py`, `tests/test_api.py`, structure du dépôt dans `README.md`, commande `uvicorn` dans `CLAUDE.md` |
 | `ai-project-template` | titre de `README.md`, `CLAUDE.md` |
 | Description du projet | `pyproject.toml`, introduction de `README.md`, `CLAUDE.md` |
 | Ligne de copyright | `LICENSE` |

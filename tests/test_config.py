@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 from project_name.config import Settings, get_settings
 
-SETTINGS_VARIABLES = ("APP_ENV", "LOG_LEVEL", "API_KEY")
+SETTINGS_VARIABLES = ("APP_ENV", "LOG_LEVEL", "LOG_FORMAT", "API_KEY")
 
 
 @pytest.fixture(autouse=True)
@@ -31,6 +31,7 @@ def test_default_values() -> None:
 
     assert settings.app_env == "dev"
     assert settings.log_level == "INFO"
+    assert settings.log_format == "json"
     assert settings.api_key is None
 
 
@@ -44,6 +45,21 @@ def test_environment_variable_overrides_default(monkeypatch: pytest.MonkeyPatch)
 
 def test_invalid_app_env_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APP_ENV", "staging")
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+def test_log_format_follows_environment_variable(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LOG_FORMAT", "console")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.log_format == "console"
+
+
+def test_invalid_log_format_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LOG_FORMAT", "xml")
 
     with pytest.raises(ValidationError):
         Settings(_env_file=None)
