@@ -23,6 +23,7 @@ Template de dépôt GitHub pour des projets de data et d'IA en Python. Il sert d
 |---|---|---|
 | Copier `.env.example` | `Copy-Item .env.example .env` | `cp .env.example .env` |
 | Supprimer `.venv` | `Remove-Item -Recurse -Force .venv` | `rm -rf .venv` |
+| Logs lisibles pour l'API en local | `$env:LOG_FORMAT = "console"`, puis la commande `uvicorn` (reste actif pour toute la session) | `LOG_FORMAT=console uv run uvicorn project_name.api:app --reload` |
 
 Astuce Windows : si le projet et le cache de uv sont sur deux disques différents, uv ne peut pas
 créer de liens physiques et affiche un avertissement. La variable `UV_LINK_MODE=copy` lui demande
@@ -43,6 +44,76 @@ Si un contrôle ne s'installe pas au niveau de `pre-commit run` (par exemple git
 contourner avec `--no-verify`.
 
 Sous PowerShell, pour la copie, remplacer la dernière ligne par `Copy-Item .env.example .env`.
+
+## Lancer l'API
+
+Il y a trois façons de lancer l'API. Elles utilisent toutes le port 8000 : une seule à la fois.
+
+### En local
+
+```bash
+uv run uvicorn project_name.api:app --reload
+```
+
+Pour des logs lisibles, placer `LOG_FORMAT=console` devant la commande ou dans `.env`. Sous
+PowerShell, voir le tableau « Commandes selon le système ».
+
+### Avec Docker seul
+
+Arrêter d'abord l'uvicorn local, qui occupe le même port 8000.
+
+```bash
+docker build -t project-name .
+docker run --rm -d -p 127.0.0.1:8000:8000 --name project-name-api project-name
+docker stop project-name-api
+```
+
+`docker run` ne lit pas `.env`, qui est exclu de l'image : l'API utilise ses valeurs par défaut.
+
+> **Sous Windows (Git Bash)** : pour regarder dans le conteneur pendant qu'il tourne, entre
+> `docker run` et `docker stop`, utiliser `docker exec`. Git Bash transforme les chemins Linux,
+> par exemple `/app` en `C:/Program Files/Git/app`. Préfixer avec `MSYS_NO_PATHCONV=1` la seule
+> commande `docker exec` qui contient un tel chemin :
+>
+> ```bash
+> MSYS_NO_PATHCONV=1 docker exec project-name-api ls -a /app
+> ```
+>
+> `-a` est nécessaire : `/app` ne contient que `.venv`, un dossier caché. Ne jamais définir cette
+> variable pour toute la session : cela casse d'autres commandes, comme `curl -o /dev/null`.
+
+### Avec docker compose
+
+```bash
+docker compose up --build --wait   # lance l'API et MLflow
+docker compose logs -f api         # suit les logs de l'API
+docker compose down                # arrête les services
+```
+
+- `--wait` rend la main quand les deux services sont healthy : environ 70 s au premier démarrage
+  de MLflow.
+- Ctrl+C arrête seulement l'affichage de `logs -f`, pas les services.
+- `docker compose down` garde le volume de MLflow.
+- docker compose impose `LOG_FORMAT=json` à l'API, quelle que soit la valeur de `.env`.
+
+### Adresses utiles
+
+| Adresse | Contenu |
+|---|---|
+| http://localhost:8000/health | état de l'API |
+| http://localhost:8000/docs | documentation interactive générée par FastAPI |
+| http://localhost:5000 | interface MLflow (avec docker compose) |
+
+`127.0.0.1` marche aussi à la place de `localhost`. Les ports ne sont publiés que sur `127.0.0.1`,
+volontairement : MLflow n'a pas d'authentification.
+
+### Changer le port de MLflow
+
+Si le port 5000 est pris (fréquent sous macOS), définir `MLFLOW_PORT` dans `.env`. Il change le
+port publié sur le poste, donc l'adresse de l'interface MLflow, mais pas celui du conteneur.
+
+Adapter alors `MLFLOW_TRACKING_URI` dans `.env`. Cette variable est prévue pour le code lancé
+depuis le poste ; aucun code ne la lit encore.
 
 ## Structure du dépôt
 
@@ -90,8 +161,8 @@ Remplacer ces éléments par le nom du nouveau projet :
 
 | Élément | Où le changer |
 |---|---|
-| `project-name` | `pyproject.toml`, `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_api.py` |
-| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `src/project_name/logging_config.py`, `tests/conftest.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_logging_config.py`, `tests/test_api.py`, structure du dépôt dans `README.md`, commande `uvicorn` dans `CLAUDE.md` et `Dockerfile` |
+| `project-name` | `pyproject.toml`, `src/project_name/api.py`, `tests/test_smoke.py`, `tests/test_api.py`, commandes Docker dans `README.md` et `CLAUDE.md` |
+| `project_name` | dossier `src/project_name/`, `pyproject.toml` (`--cov`), `src/project_name/api.py`, `src/project_name/logging_config.py`, `tests/conftest.py`, `tests/test_smoke.py`, `tests/test_config.py`, `tests/test_logging_config.py`, `tests/test_api.py`, structure du dépôt et commande `uvicorn` dans `README.md`, commande `uvicorn` et section « Contraintes du template » dans `CLAUDE.md`, `Dockerfile` |
 | `ai-project-template` | titre de `README.md`, `CLAUDE.md` |
 | Description du projet | `pyproject.toml`, introduction de `README.md`, `CLAUDE.md` |
 | Ligne de copyright | `LICENSE` |
@@ -110,6 +181,6 @@ Les seules occurrences restantes doivent être celles de cette section, qui cite
 
 - Intégration continue (CI).
 - Terraform.
-- Documentation.
+- Gabarits de documentation (ADR, schémas d'architecture).
 
 Licence : MIT, voir [LICENSE](LICENSE).

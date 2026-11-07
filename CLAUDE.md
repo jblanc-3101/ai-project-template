@@ -23,6 +23,10 @@ L'auteur est en formation : chaque fichier doit pouvoir être expliqué devant u
 5. Ne jamais écrire de secret (mot de passe, clé d'API, jeton, identifiant AWS) dans le code
    ni dans un fichier suivi par Git. Les secrets passent par des variables d'environnement
    ou un fichier ignoré par Git.
+6. Ne jamais lancer `docker compose down -v`, `docker volume rm` ni `docker system prune` sans
+   demander. Les deux premières suppriment l'historique de MLflow ; la troisième agit sur tout
+   Docker du poste, pas seulement sur ce projet (conteneurs arrêtés, réseaux inutilisés, images
+   orphelines, cache de construction).
 
 ## Conventions
 
@@ -63,3 +67,26 @@ L'auteur est en formation : chaque fichier doit pouvoir être expliqué devant u
 - `uv add --dev <paquet>` : ajoute une dépendance de développement.
 - `cp .env.example .env` : crée le fichier local de configuration (équivalent PowerShell dans
   le README).
+- `docker build -t project-name .` : construit l'image de l'API.
+- `docker run --rm -d -p 127.0.0.1:8000:8000 --name project-name-api project-name` : lance l'API
+  dans un conteneur.
+- `docker stop project-name-api` : arrête ce conteneur.
+- `docker compose up --build --wait` : lance l'API et MLflow, et rend la main quand les deux
+  services sont healthy.
+- `docker compose logs -f api` : suit les logs de l'API.
+- `docker compose down` : arrête les services et garde le volume de MLflow.
+
+## Contraintes du template
+
+- Les logs sont configurés à l'import d'`api.py` : ne pas déplacer cet appel dans le lifespan.
+  Toujours lancer l'application par son nom (`project_name.api:app`), jamais avec
+  `uvicorn.run(app)`. Conséquence : un `.env` invalide fait échouer la collecte des tests.
+- Le middleware renvoie lui-même la réponse 500 : un `@app.exception_handler(Exception)` ne peut
+  jamais la produire. Les gestionnaires pour un type d'exception précis fonctionnent. Pour changer
+  la réponse 500, modifier le middleware.
+- Charger un futur modèle dans le lifespan, jamais à l'import.
+- Dans un script, attendre l'état healthy avec `docker compose up --wait` plutôt qu'un délai fixe.
+- Le projet qui utilisera MLflow devra ajouter un champ `mlflow_tracking_uri` à `Settings` et le
+  passer à `mlflow.set_tracking_uri`. `.env` n'est lu que par `Settings` et n'arrive pas dans les
+  variables d'environnement, alors que compose fournit une vraie variable. Sans cela, MLflow
+  écrirait en silence dans un dossier local `mlruns` sur le poste.
