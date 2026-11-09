@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Every Monday at 06:17 UTC: GitHub often delays scheduled runs at the start of an hour.
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  # One group per pull request, so a new commit cancels the previous run. Every other run gets
+  # its own group (run_id): runs on main are never cancelled or replaced.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Get the exact Python version for the pre-commit cache key
+        run: echo "PYTHON_VERSION=$(uv run python -c 'import platform; print(platform.python_version())')" >> "$GITHUB_ENV"
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-py${{ env.PYTHON_VERSION }}-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: uv run pre-commit run --all-files --show-diff-on-failure
+        env:
+          # The gitleaks hook only scans the index, which is empty in CI; the secrets job scans history.
+          SKIP: gitleaks
+
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: docker compose config --quiet
+      - run: docker compose up --build --wait --wait-timeout 120 api
+      - run: curl --fail --silent --show-error http://localhost:8000/health
+      - if: failure()
+        run: docker compose logs api
+      - if: always()
+        run: docker compose down
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # A job-level block replaces the workflow-level one, so contents: read is repeated here.
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PR comments would need pull-requests: write; a leak still fails the job (log and summary).
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          # Same gitleaks version as the pre-commit hook.
+          GITLEAKS_VERSION: "8.30.0"
