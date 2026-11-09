@@ -36,7 +36,7 @@ de copier directement les fichiers : `$env:UV_LINK_MODE = "copy"` pour la sessio
 uv sync                             # installe les dépendances dans .venv
 uv run pre-commit install           # active les contrôles à chaque commit
 uv run pre-commit run --all-files   # premier lancement lent : installe et vérifie les contrôles
-uv run pytest                       # lance les tests
+uv run pytest                       # lance les tests ; échoue si la couverture passe sous 80 %
 cp .env.example .env                # crée le fichier local de configuration
 ```
 

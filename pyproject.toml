@@ -34,3 +34,7 @@ select = ["E", "F", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --cov=project_name --cov-report=term-missing"
+filterwarnings = ["error"]
+
+[tool.coverage.report]
+fail_under = 80
