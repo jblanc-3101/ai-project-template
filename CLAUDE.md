@@ -58,7 +58,9 @@ L'auteur est en formation : chaque fichier doit pouvoir être expliqué devant u
 - `uv sync` : installe les dépendances de `uv.lock` dans `.venv`.
 - `uv run pre-commit install` : active les contrôles à chaque commit.
 - `uv run uvicorn project_name.api:app --reload` : lance l'API en local.
-- `uv run pytest` : lance les tests et mesure la couverture.
+- `uv run pytest` : lance les tests et mesure la couverture. La commande échoue si la couverture
+  totale passe sous 80 %. Pour lancer une partie des tests, utiliser `uv run pytest --no-cov`
+  suivi du fichier de tests.
 - `uv run ruff check .` : signale les erreurs de lint.
 - `uv run ruff check . --fix` : corrige automatiquement les erreurs qui peuvent l'être.
 - `uv run ruff format .` : formate le code.
@@ -90,3 +92,6 @@ L'auteur est en formation : chaque fichier doit pouvoir être expliqué devant u
   passer à `mlflow.set_tracking_uri`. `.env` n'est lu que par `Settings` et n'arrive pas dans les
   variables d'environnement, alors que compose fournit une vraie variable. Sans cela, MLflow
   écrirait en silence dans un dossier local `mlruns` sur le poste.
+- Tout avertissement émis pendant les tests est une erreur (`filterwarnings = ["error"]`). Corriger
+  la cause. Si elle vient d'une bibliothèque, ajouter dans `pyproject.toml` un filtre `ignore`
+  ciblé (message, catégorie, module) avec un commentaire qui dit pourquoi ; jamais de filtre global.
